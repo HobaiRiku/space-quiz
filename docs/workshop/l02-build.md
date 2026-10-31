@@ -40,5 +40,5 @@ npm install --prefix tests jsdom
   that loads `index.html` in jsdom and asserts on actual rendered output. This is
   weaker than a human looking at the page but stronger than trusting the model.
 - **Answers are addressed by text, not index.** The render/pick functions key off
-  question text and answer text so that a later shuffle feature (issue #2) does
+  question text and answer text so that a later shuffle feature (issue #1) does
   not invalidate every test assertion.
