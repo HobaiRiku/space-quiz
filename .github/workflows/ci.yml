@@ -25,3 +25,5 @@ jobs:
       - run: npm ci
       - name: Run smoke test
         run: node smoke.js
+      - name: Run personal-best test
+        run: node best.js
