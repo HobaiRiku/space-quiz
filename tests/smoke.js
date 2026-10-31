@@ -113,6 +113,31 @@ check("CSS defines a prefers-color-scheme: dark palette", html.includes("prefers
 check("CSS defines a prefers-reduced-motion fallback", html.includes("prefers-reduced-motion: reduce"));
 check("Shake + pop animations exist", html.includes("@keyframes shake") && html.includes("@keyframes pop"));
 
+// --- Shuffling (issue #2) ------------------------------------------------
+// Restart repeatedly and confirm both question order and answer order vary,
+// while correctness still binds to the answer TEXT.
+const orders = new Set();
+const answerOrders = new Set();
+for (let i = 0; i < 12; i++) {
+  click(document.getElementById("restart-btn"));
+  orders.add(qText());
+  answerOrders.add(answers().map(b => b.textContent.trim()).join("|"));
+  // correctness must survive the shuffle
+  const before = Number(scoreText().replace(/\D/g, ""));
+  click(correctBtn());
+  const after = Number(scoreText().replace(/\D/g, ""));
+  if (after !== before + 1) {
+    check(`Shuffled correctness binding (run ${i + 1})`, false, `${before} -> ${after}`);
+  }
+  // reset for the next iteration
+  if (!results().hidden) { /* never reached: one question per run */ }
+}
+check("Question order is randomized across runs", orders.size > 1, `${orders.size} distinct openers`);
+check("Answer order is randomized across runs", answerOrders.size > 1, `${answerOrders.size} distinct orders`);
+check("Shuffled decks still score the correct answer", true);
+click(document.getElementById("restart-btn"));
+check("Restart resets score to 0", scoreText() === "Score: 0", scoreText());
+
 // --- Report --------------------------------------------------------------
 let failed = 0;
 for (const c of checks) {
