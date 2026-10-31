@@ -253,6 +253,43 @@
     { q: "How long does sunlight take to reach Earth?", a: ["About 8 seconds", "About 8 minutes", "About 8 hours", "About 80 minutes"], c: 1 }
   ];
 
+  // --- Randomization -----------------------------------------------------
+  // crypto.getRandomValues when available (unbiased), Math.random as a fallback.
+  function randomInt(max) {
+    if (self.crypto && typeof self.crypto.getRandomValues === "function") {
+      const limit = Math.floor(0xffffffff / max) * max;
+      const buf = new Uint32Array(1);
+      let n;
+      do { self.crypto.getRandomValues(buf); n = buf[0]; } while (n >= limit);
+      return n % max;
+    }
+    return Math.floor(Math.random() * max);
+  }
+
+  function shuffle(list) {
+    const out = list.slice();
+    for (let i = out.length - 1; i > 0; i--) {
+      const j = randomInt(i + 1);
+      [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+  }
+
+  // Build a fresh deck: questions shuffled, and each question's answers shuffled
+  // with the correct index remapped so scoring always binds to the right label.
+  function buildDeck() {
+    return shuffle(QUESTIONS).map(item => {
+      const pairs = item.a.map((label, i) => ({ label, correct: i === item.c }));
+      const mixed = shuffle(pairs);
+      return {
+        q: item.q,
+        a: mixed.map(p => p.label),
+        c: mixed.findIndex(p => p.correct)
+      };
+    });
+  }
+
+  let deck = buildDeck();
   let idx = 0, score = 0, locked = false;
 
   const els = {
@@ -274,11 +311,11 @@
 
   function render() {
     locked = false;
-    const item = QUESTIONS[idx];
-    els.qCounter.textContent = `Question ${idx + 1} of ${QUESTIONS.length}`;
+    const item = deck[idx];
+    els.qCounter.textContent = `Question ${idx + 1} of ${deck.length}`;
     els.scoreCounter.textContent = `Score: ${score}`;
     els.progress.setAttribute("aria-valuenow", String(idx));
-    els.progressFill.style.width = `${(idx / QUESTIONS.length) * 100}%`;
+    els.progressFill.style.width = `${(idx / deck.length) * 100}%`;
     els.qText.textContent = item.q;
     els.feedback.textContent = "";
     els.feedback.className = "feedback";
@@ -299,7 +336,7 @@
   function pick(btn, i) {
     if (locked) return;
     locked = true;
-    const item = QUESTIONS[idx];
+    const item = deck[idx];
     const buttons = els.answers.querySelectorAll(".answer");
     buttons.forEach(b => (b.disabled = true));
     buttons[item.c].classList.add("correct");
@@ -313,16 +350,16 @@
       els.feedback.classList.add("bad");
     }
     els.scoreCounter.textContent = `Score: ${score}`;
-    els.progressFill.style.width = `${((idx + 1) / QUESTIONS.length) * 100}%`;
+    els.progressFill.style.width = `${((idx + 1) / deck.length) * 100}%`;
     els.progress.setAttribute("aria-valuenow", String(idx + 1));
-    els.nextBtn.textContent = idx === QUESTIONS.length - 1 ? "See results 🏁" : "Next question →";
+    els.nextBtn.textContent = idx === deck.length - 1 ? "See results 🏁" : "Next question →";
     els.nextBtn.classList.add("visible");
     els.nextBtn.focus();
   }
 
   els.nextBtn.addEventListener("click", () => {
     idx++;
-    if (idx >= QUESTIONS.length) return showResults();
+    if (idx >= deck.length) return showResults();
     render();
     els.qText.focus?.();
   });
@@ -330,7 +367,7 @@
   function showResults() {
     els.quiz.hidden = true;
     els.results.hidden = false;
-    const pct = score / QUESTIONS.length;
+    const pct = score / deck.length;
     let emoji, title;
     if (score >= 9) { emoji = "🏆"; title = "Flight Director!"; }
     else if (pct >= 0.7) { emoji = "🚀"; title = "Commander material!"; }
@@ -338,10 +375,11 @@
     else { emoji = "🌱"; title = "Bootcamp days…"; }
     els.resultEmoji.textContent = emoji;
     els.resultTitle.textContent = title;
-    els.resultText.textContent = `You scored ${score} out of ${QUESTIONS.length}.`;
+    els.resultText.textContent = `You scored ${score} out of ${deck.length}.`;
   }
 
   els.restartBtn.addEventListener("click", () => {
+    deck = buildDeck();
     idx = 0; score = 0;
     els.results.hidden = true;
     els.quiz.hidden = false;
