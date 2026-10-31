@@ -1,42 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Space Exploration Quiz</title>
+<title>太空探索知识问答</title>
 <style>
   :root {
-    --bg: #f4f6fb;
-    --card: #ffffff;
-    --text: #1b2430;
-    --muted: #5b6b7f;
-    --accent: #4f6ef7;
-    --accent-soft: #e6ebff;
-    --correct: #1f9d55;
+    color-scheme: light dark;
+    --bg: #eef2fb;
+    --bg-glow-1: #dfe6ff;
+    --bg-glow-2: #f1e6ff;
+    --star: rgba(79, 110, 247, 0.35);
+    --card: rgba(255, 255, 255, 0.86);
+    --card-solid: #ffffff;
+    --text: #172033;
+    --muted: #55637a;
+    --accent: #3f5ae0;
+    --accent-2: #8b5cf6;
+    --accent-soft: #e8ecff;
+    --on-accent: #ffffff;
+    --correct: #15803d;
     --correct-soft: #dcfce7;
-    --wrong: #dc2626;
+    --wrong: #b91c1c;
     --wrong-soft: #fee2e2;
-    --border: #dbe2ec;
-    --track: #e5e9f2;
-    --shadow: 0 10px 30px rgba(27, 36, 48, 0.10);
+    --border: #d9e0ee;
+    --track: #e3e8f3;
+    --badge: #eef1f8;
+    --shadow: 0 18px 50px rgba(36, 52, 110, 0.14), 0 2px 6px rgba(36, 52, 110, 0.06);
+    --glow: rgba(63, 90, 224, 0.28);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #0d1220;
-      --card: #171e30;
-      --text: #eef2f9;
-      --muted: #9aa8bd;
-      --accent: #7c93ff;
-      --accent-soft: #232e55;
-      --correct: #34d399;
-      --correct-soft: #103a2c;
-      --wrong: #f87171;
-      --wrong-soft: #481b1b;
-      --border: #2a3550;
-      --track: #242e47;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      --bg: #070b18;
+      --bg-glow-1: #1a2350;
+      --bg-glow-2: #2a1745;
+      --star: rgba(226, 232, 255, 0.85);
+      --card: rgba(20, 27, 48, 0.82);
+      --card-solid: #141b30;
+      --text: #eef2fb;
+      --muted: #a3b0c6;
+      --accent: #8ea2ff;
+      --accent-2: #c4a1ff;
+      --accent-soft: #222c55;
+      --on-accent: #0b1022;
+      --correct: #4ade80;
+      --correct-soft: #0f3a26;
+      --wrong: #fb7185;
+      --wrong-soft: #4a1822;
+      --border: #2a3456;
+      --track: #222b47;
+      --badge: #1f2742;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
+      --glow: rgba(142, 162, 255, 0.35);
     }
   }
+
   * { box-sizing: border-box; }
   body {
     margin: 0;
@@ -44,164 +62,317 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg);
+    padding: 28px 16px;
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+      "Noto Sans SC", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 15px;
-    line-height: 1.55;
-    padding: 24px 16px;
+    line-height: 1.6;
+    background-color: var(--bg);
+    /* CSS-only starfield over two soft nebula glows */
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 18%, var(--star), transparent 60%),
+      radial-gradient(1px 1px at 28% 72%, var(--star), transparent 60%),
+      radial-gradient(1.5px 1.5px at 44% 12%, var(--star), transparent 60%),
+      radial-gradient(1px 1px at 63% 84%, var(--star), transparent 60%),
+      radial-gradient(2px 2px at 78% 28%, var(--star), transparent 60%),
+      radial-gradient(1px 1px at 90% 62%, var(--star), transparent 60%),
+      radial-gradient(1px 1px at 6% 52%, var(--star), transparent 60%),
+      radial-gradient(1.5px 1.5px at 54% 46%, var(--star), transparent 60%),
+      radial-gradient(1px 1px at 84% 90%, var(--star), transparent 60%),
+      radial-gradient(1px 1px at 36% 38%, var(--star), transparent 60%),
+      radial-gradient(60% 50% at 15% 10%, var(--bg-glow-1), transparent 70%),
+      radial-gradient(55% 45% at 90% 95%, var(--bg-glow-2), transparent 70%);
+    background-attachment: fixed;
   }
+
   main {
+    position: relative;
     width: 100%;
     max-width: 420px;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 18px;
+    border-radius: 22px;
     box-shadow: var(--shadow);
-    padding: 28px 26px 30px;
+    padding: 26px 24px 28px;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    overflow: hidden;
   }
-  h1 {
-    margin: 0 0 4px;
-    font-size: 18px;
-    letter-spacing: 1.4px;
-    text-transform: uppercase;
-    font-weight: 700;
-    padding: 10px 12px 11px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    border-left: 4px solid var(--accent);
-    background:
-      repeating-linear-gradient(90deg, transparent 0 6px, color-mix(in srgb, var(--accent) 10%, transparent) 6px 7px),
-      var(--accent-soft);
+  main::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
   }
-  /* Mission-control status strip above the title, screen-reader friendly */
-  h1::before {
-    content: "◉ FLIGHT OPS · LIVE";
-    display: block;
-    font-size: 10px;
-    letter-spacing: 1.8px;
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 14px;
+  }
+  .lang-btn {
+    flex: none;
+    font: inherit;
+    font-size: 13px;
     font-weight: 600;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--text);
+    background: var(--card-solid);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .lang-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .lang-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--accent-soft);
     color: var(--accent);
-    margin-bottom: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+  }
+  .eyebrow .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--correct);
+    box-shadow: 0 0 0 3px var(--correct-soft);
     animation: blip 2s ease-in-out infinite;
   }
   @keyframes blip {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+    50% { opacity: 0.35; }
   }
-  @media (prefers-reduced-motion: reduce) {
-    h1::before { animation: none; }
+
+  h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    line-height: 1.35;
+  }
+  h1 .logo { flex: none; width: 28px; height: 28px; color: var(--accent); }
+  h1 .title-text {
+    background: linear-gradient(90deg, var(--text), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   .tagline {
     margin: 0 0 20px;
     color: var(--muted);
     font-size: 14px;
   }
+
   .hud {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 4px 12px;
-    margin-bottom: 8px;
-    font-size: 13px;
-    color: var(--muted);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
   }
-  .hud .score, .hud .best { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .hud span {
+    padding: 7px 8px;
+    border-radius: 12px;
+    background: var(--badge);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .hud #q-counter { color: var(--accent); }
+
   .progress {
-    height: 8px;
+    height: 10px;
     border-radius: 999px;
     background: var(--track);
     overflow: hidden;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
   }
   .progress-fill {
     height: 100%;
     width: 0%;
     border-radius: 999px;
-    background: linear-gradient(90deg, var(--accent), #a78bfa);
-    transition: width 0.35s ease;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    box-shadow: 0 0 12px var(--glow);
+    transition: width 0.4s ease;
   }
+
   #question-text {
     font-size: 17px;
-    font-weight: 600;
-    margin: 0 0 14px;
-    min-height: 48px;
+    font-weight: 700;
+    line-height: 1.55;
+    margin: 0 0 16px;
+    min-height: 54px;
   }
+
   ul.answers {
     list-style: none;
-    margin: 0 0 8px;
+    margin: 0 0 6px;
     padding: 0;
     display: grid;
     gap: 10px;
+    counter-reset: option;
   }
+  ul.answers li { counter-increment: option; }
   .answer {
     width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     text-align: left;
     font: inherit;
     color: var(--text);
-    background: var(--card);
+    background: var(--card-solid);
     border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 14px;
+    border-radius: 14px;
+    padding: 11px 14px 11px 11px;
     cursor: pointer;
-    transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  /* Option letter lives in CSS so the button's text stays exactly the answer */
+  .answer::before {
+    content: counter(option, upper-alpha);
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: var(--badge);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    transition: background 0.15s ease, color 0.15s ease;
   }
   .answer:hover:not(:disabled) {
     border-color: var(--accent);
     background: var(--accent-soft);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px var(--glow);
+  }
+  .answer:hover:not(:disabled)::before {
+    background: var(--accent);
+    color: var(--on-accent);
   }
   .answer:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 2px;
   }
   .answer:disabled { cursor: default; }
+  .answer:disabled:not(.correct):not(.wrong) { opacity: 0.6; }
   .answer.correct {
     border-color: var(--correct);
     background: var(--correct-soft);
     animation: pop 0.4s ease;
+  }
+  .answer.correct::before {
+    content: "✓";
+    background: var(--correct);
+    color: var(--card-solid);
   }
   .answer.wrong {
     border-color: var(--wrong);
     background: var(--wrong-soft);
     animation: shake 0.45s ease;
   }
+  .answer.wrong::before {
+    content: "✗";
+    background: var(--wrong);
+    color: var(--card-solid);
+  }
+
   .feedback {
-    min-height: 22px;
-    margin: 10px 0 4px;
+    min-height: 24px;
+    margin: 12px 0 4px;
     font-weight: 600;
     font-size: 14px;
   }
   .feedback.good { color: var(--correct); }
   .feedback.bad { color: var(--wrong); }
+
   .next-btn {
     display: none;
     width: 100%;
     margin-top: 12px;
     font: inherit;
-    font-weight: 600;
-    color: #fff;
-    background: var(--accent);
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--on-accent);
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
     border: none;
-    border-radius: 12px;
-    padding: 12px;
+    border-radius: 14px;
+    padding: 13px;
     cursor: pointer;
+    box-shadow: 0 8px 20px var(--glow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
+  .next-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 26px var(--glow); }
   .next-btn.visible { display: block; }
-  .next-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-  .results { text-align: center; }
-  .results .emoji { font-size: 56px; margin: 8px 0; }
-  .results h2 { margin: 6px 0 2px; font-size: 20px; }
-  .results p { color: var(--muted); margin: 4px 0 18px; }
+  .next-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+  .results { text-align: center; padding-top: 6px; }
+  .score-ring {
+    --pct: 0;
+    width: 132px;
+    height: 132px;
+    margin: 4px auto 14px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background:
+      conic-gradient(var(--accent) 0%, var(--accent-2) calc(var(--pct) * 1%), var(--track) 0);
+    box-shadow: 0 0 30px var(--glow);
+  }
+  .score-ring-inner {
+    width: 108px;
+    height: 108px;
+    border-radius: 50%;
+    background: var(--card-solid);
+    display: grid;
+    place-items: center;
+    align-content: center;
+  }
+  .results .score-big {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+  .results .accuracy { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .results h2 { margin: 4px 0 2px; font-size: 21px; }
+  .results p { color: var(--muted); margin: 4px 0 14px; }
   #result-best {
     margin: 0 0 18px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: var(--accent-soft);
     font-weight: 600;
     font-size: 14px;
     color: var(--accent);
     min-height: 20px;
   }
+  #result-best:empty { display: none; }
   #result-best.new { animation: pop 0.5s ease; }
+
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20% { transform: translateX(-7px); }
@@ -215,54 +386,150 @@
     100% { transform: scale(1); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .answer.correct, .answer.wrong { animation: none; }
+    .eyebrow .dot { animation: none; }
+    .answer.correct, .answer.wrong, #result-best.new { animation: none; }
+    .answer, .answer::before, .answer:hover:not(:disabled), .next-btn, .next-btn:hover, .lang-btn { transition: none; transform: none; }
     .progress-fill { transition: none; }
+  }
+  @media (max-width: 360px) {
+    main { padding: 22px 16px 24px; }
+    .hud span { font-size: 12px; padding: 6px 4px; }
   }
   [hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <main aria-live="polite">
-  <h1>🚀 Space Exploration Quiz</h1>
-  <p class="tagline">Ten questions. How mission-ready are you?</p>
+  <div class="topbar">
+    <p class="eyebrow" aria-hidden="true"><span class="dot"></span><span data-i18n="status">任务控制中心 · 在线</span></p>
+    <button class="lang-btn" id="lang-btn" type="button" lang="en">English</button>
+  </div>
+  <h1>
+    <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <circle cx="16" cy="16" r="8" fill="currentColor" />
+      <ellipse cx="16" cy="16" rx="14.5" ry="4.5" fill="none" stroke="currentColor" stroke-width="2" opacity="0.55" transform="rotate(-24 16 16)" />
+    </svg>
+    <span class="title-text" data-i18n="title">太空探索知识问答</span>
+  </h1>
+  <p class="tagline" data-i18n="tagline">10 道题，测测你离成为宇航员还有多远？</p>
 
-  <section id="quiz" aria-label="Quiz">
+  <section id="quiz" data-i18n-label="quizLabel" aria-label="答题区">
     <div class="hud">
-      <span id="q-counter">Question 1 of 10</span>
-      <span class="score" id="score-counter">Score: 0</span>
-      <span class="best" id="best-counter">Best: —</span>
+      <span id="q-counter">第 1 / 10 题</span>
+      <span class="score" id="score-counter">得分：0</span>
+      <span class="best" id="best-counter">最佳：—</span>
     </div>
-    <div class="progress" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" id="progress">
+    <div class="progress" role="progressbar" data-i18n-label="progressLabel" aria-label="答题进度" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" id="progress">
       <div class="progress-fill" id="progress-fill"></div>
     </div>
     <p id="question-text"></p>
     <ul class="answers" id="answers"></ul>
     <p class="feedback" id="feedback" role="status"></p>
-    <button class="next-btn" id="next-btn" type="button">Next question →</button>
+    <button class="next-btn" id="next-btn" type="button">下一题 →</button>
   </section>
 
-  <section id="results" class="results" aria-label="Results" hidden>
-    <div class="emoji" id="result-emoji">🌟</div>
-    <h2 id="result-title">Mission complete!</h2>
+  <section id="results" class="results" data-i18n-label="resultsLabel" aria-label="答题结果" hidden>
+    <div class="score-ring" id="score-ring">
+      <div class="score-ring-inner">
+        <div class="score-big" id="result-score"></div>
+        <div class="accuracy" id="result-accuracy"></div>
+      </div>
+    </div>
+    <h2 id="result-title"></h2>
     <p id="result-text"></p>
     <p id="result-best" role="status"></p>
-    <button class="next-btn visible" id="restart-btn" type="button">Fly again ↻</button>
+    <button class="next-btn visible" id="restart-btn" type="button">再飞一次 ↻</button>
   </section>
 </main>
 
 <script>
+  // Each question carries both languages; `c` indexes the correct answer in both lists.
   const QUESTIONS = [
-    { q: "Which planet is known as the Red Planet?", a: ["Mars", "Venus", "Jupiter", "Mercury"], c: 0 },
-    { q: "Who was the first human to walk on the Moon?", a: ["Buzz Aldrin", "Neil Armstrong", "Yuri Gagarin", "Michael Collins"], c: 1 },
-    { q: "Which is the largest planet in our solar system?", a: ["Saturn", "Neptune", "Jupiter", "Earth"], c: 2 },
-    { q: "What galaxy do we live in?", a: ["Andromeda", "Triangulum", "Whirlpool", "The Milky Way"], c: 3 },
-    { q: "Which spacecraft was the first to fly past Pluto (2015)?", a: ["New Horizons", "Voyager 1", "Cassini", "Pioneer 10"], c: 0 },
-    { q: "What is the closest star to Earth?", a: ["Proxima Centauri", "The Sun", "Sirius", "Alpha Centauri A"], c: 1 },
-    { q: "Which rover landed on Mars in Jezero Crater in 2021?", a: ["Curiosity", "Opportunity", "Perseverance", "Zhurong"], c: 2 },
-    { q: "What are Saturn's rings mainly made of?", a: ["Ice", "Rock", "Metal", "Gas"], c: 0 },
-    { q: "Which was the first artificial satellite in orbit?", a: ["Explorer 1", "Sputnik 1", "Vostok 1", "Telstar"], c: 1 },
-    { q: "How long does sunlight take to reach Earth?", a: ["About 8 seconds", "About 8 minutes", "About 8 hours", "About 80 minutes"], c: 1 }
+    { c: 0,
+      zh: { q: "哪颗行星被称为“红色星球”？", a: ["火星", "金星", "木星", "水星"] },
+      en: { q: "Which planet is known as the Red Planet?", a: ["Mars", "Venus", "Jupiter", "Mercury"] } },
+    { c: 1,
+      zh: { q: "第一位登上月球的人是谁？", a: ["巴兹·奥尔德林", "尼尔·阿姆斯特朗", "尤里·加加林", "迈克尔·柯林斯"] },
+      en: { q: "Who was the first human to walk on the Moon?", a: ["Buzz Aldrin", "Neil Armstrong", "Yuri Gagarin", "Michael Collins"] } },
+    { c: 2,
+      zh: { q: "太阳系中最大的行星是哪一颗？", a: ["土星", "海王星", "木星", "地球"] },
+      en: { q: "Which is the largest planet in our solar system?", a: ["Saturn", "Neptune", "Jupiter", "Earth"] } },
+    { c: 3,
+      zh: { q: "我们生活在哪个星系中？", a: ["仙女座星系", "三角座星系", "涡状星系", "银河系"] },
+      en: { q: "What galaxy do we live in?", a: ["Andromeda", "Triangulum", "Whirlpool", "The Milky Way"] } },
+    { c: 0,
+      zh: { q: "2015 年首次飞掠冥王星的探测器是？", a: ["新视野号", "旅行者 1 号", "卡西尼号", "先驱者 10 号"] },
+      en: { q: "Which spacecraft was the first to fly past Pluto (2015)?", a: ["New Horizons", "Voyager 1", "Cassini", "Pioneer 10"] } },
+    { c: 1,
+      zh: { q: "距离地球最近的恒星是？", a: ["比邻星", "太阳", "天狼星", "南门二 A"] },
+      en: { q: "What is the closest star to Earth?", a: ["Proxima Centauri", "The Sun", "Sirius", "Alpha Centauri A"] } },
+    { c: 2,
+      zh: { q: "2021 年在火星耶泽罗撞击坑着陆的火星车是？", a: ["好奇号", "机遇号", "毅力号", "祝融号"] },
+      en: { q: "Which rover landed on Mars in Jezero Crater in 2021?", a: ["Curiosity", "Opportunity", "Perseverance", "Zhurong"] } },
+    { c: 0,
+      zh: { q: "土星环主要由什么构成？", a: ["冰", "岩石", "金属", "气体"] },
+      en: { q: "What are Saturn's rings mainly made of?", a: ["Ice", "Rock", "Metal", "Gas"] } },
+    { c: 1,
+      zh: { q: "人类第一颗进入轨道的人造卫星是？", a: ["探险者 1 号", "斯普特尼克 1 号", "东方 1 号", "电星 1 号"] },
+      en: { q: "Which was the first artificial satellite in orbit?", a: ["Explorer 1", "Sputnik 1", "Vostok 1", "Telstar"] } },
+    { c: 1,
+      zh: { q: "阳光从太阳到达地球大约需要多久？", a: ["约 8 秒", "约 8 分钟", "约 8 小时", "约 80 分钟"] },
+      en: { q: "How long does sunlight take to reach Earth?", a: ["About 8 seconds", "About 8 minutes", "About 8 hours", "About 80 minutes"] } }
   ];
+
+  const STRINGS = {
+    zh: {
+      htmlLang: "zh-CN",
+      docTitle: "太空探索知识问答",
+      status: "任务控制中心 · 在线",
+      title: "太空探索知识问答",
+      tagline: "10 道题，测测你离成为宇航员还有多远？",
+      quizLabel: "答题区",
+      progressLabel: "答题进度",
+      resultsLabel: "答题结果",
+      counter: (n, t) => `第 ${n} / ${t} 题`,
+      score: s => `得分：${s}`,
+      best: b => (b === null ? "最佳：—" : `最佳：${b}`),
+      correct: "回答正确！",
+      wrong: a => `答错了，正确答案是「${a}」。`,
+      next: "下一题 →",
+      finish: "查看结果 →",
+      restart: "再飞一次 ↻",
+      ranks: ["飞行总监级别", "指令长的好苗子", "潜力学员，继续加油", "新兵训练营见"],
+      accuracy: p => `正确率 ${p}%`,
+      resultText: (s, t) => `你答对了 ${s} / ${t} 题。`,
+      newBest: (b, t) => `新的个人最佳：${b} / ${t}`,
+      beatBest: (b, t) => `待超越的个人最佳：${b} / ${t}`,
+      // The toggle is labelled in the language it switches TO.
+      toggle: "English",
+      toggleLang: "en"
+    },
+    en: {
+      htmlLang: "en",
+      docTitle: "Space Exploration Quiz",
+      status: "FLIGHT OPS · LIVE",
+      title: "Space Exploration Quiz",
+      tagline: "Ten questions. How mission-ready are you?",
+      quizLabel: "Quiz",
+      progressLabel: "Quiz progress",
+      resultsLabel: "Results",
+      counter: (n, t) => `Question ${n} of ${t}`,
+      score: s => `Score: ${s}`,
+      best: b => (b === null ? "Best: —" : `Best: ${b}`),
+      correct: "Correct!",
+      wrong: a => `Not quite. The answer is “${a}”.`,
+      next: "Next question →",
+      finish: "See results →",
+      restart: "Fly again ↻",
+      ranks: ["Flight Director", "Commander material", "Cadet on the rise", "Bootcamp days"],
+      accuracy: p => `${p}% accuracy`,
+      resultText: (s, t) => `You scored ${s} out of ${t}.`,
+      newBest: (b, t) => `New personal best: ${b} of ${t}`,
+      beatBest: (b, t) => `Personal best to beat: ${b} of ${t}`,
+      toggle: "中文",
+      toggleLang: "zh-CN"
+    }
+  };
 
   // --- Randomization -----------------------------------------------------
   // crypto.getRandomValues when available (unbiased), Math.random as a fallback.
@@ -286,48 +553,43 @@
     return out;
   }
 
-  // Build a fresh deck: questions shuffled, and each question's answers shuffled
-  // with the correct index remapped so scoring always binds to the right label.
+  // Build a fresh deck: questions shuffled, and each question's answers shuffled.
+  // The deck stores the answer ORDER, not labels, so switching language mid-round
+  // relabels the same buttons without reshuffling or losing the correct index.
   function buildDeck() {
-    return shuffle(QUESTIONS).map(item => {
-      const pairs = item.a.map((label, i) => ({ label, correct: i === item.c }));
-      const mixed = shuffle(pairs);
-      return {
-        q: item.q,
-        a: mixed.map(p => p.label),
-        c: mixed.findIndex(p => p.correct)
-      };
+    return shuffle(QUESTIONS).map(src => {
+      const order = shuffle(src.zh.a.map((_, i) => i));
+      return { src, order, c: order.indexOf(src.c) };
     });
   }
 
-  let deck = buildDeck();
-  // --- Personal best persistence (issue #1) ------------------------------
-  // Every storage access is guarded: blocked storage (private mode, file://
-  // restrictions, quota) must degrade to "no best score", never break a round.
+  // --- Guarded storage -----------------------------------------------------
+  // Blocked storage (private mode, file:// restrictions, quota) must degrade
+  // gracefully, never break a round.
   const BEST_KEY = "spacequiz.best";
+  const LANG_KEY = "spacequiz.lang";
+
+  function storageGet(key) {
+    try { return localStorage.getItem(key); } catch { return null; }
+  }
+
+  function storageSet(key, value) {
+    try { localStorage.setItem(key, value); return true; } catch { return false; }
+  }
 
   function readBest(max) {
-    try {
-      const raw = localStorage.getItem(BEST_KEY);
-      if (raw === null) return null;
-      const n = Number.parseInt(raw, 10);
-      if (!Number.isFinite(n) || n < 0 || n > max) return null;
-      return n;
-    } catch {
-      return null;
-    }
+    const raw = storageGet(BEST_KEY);
+    if (raw === null) return null;
+    const n = Number.parseInt(raw, 10);
+    if (!Number.isFinite(n) || n < 0 || n > max) return null;
+    return n;
   }
 
-  function writeBest(n) {
-    try {
-      localStorage.setItem(BEST_KEY, String(n));
-      return true;
-    } catch {
-      return false;
-    }
-  }
+  const writeBest = n => storageSet(BEST_KEY, String(n));
 
-  let idx = 0, score = 0, locked = false;
+  let lang = STRINGS[storageGet(LANG_KEY)] ? storageGet(LANG_KEY) : "zh";
+  let deck = buildDeck();
+  let idx = 0, score = 0, locked = false, picked = null, outcome = null;
 
   const els = {
     quiz: document.getElementById("quiz"),
@@ -342,57 +604,72 @@
     resultBest: document.getElementById("result-best"),
     progress: document.getElementById("progress"),
     progressFill: document.getElementById("progress-fill"),
-    resultEmoji: document.getElementById("result-emoji"),
+    scoreRing: document.getElementById("score-ring"),
+    resultScore: document.getElementById("result-score"),
+    resultAccuracy: document.getElementById("result-accuracy"),
     resultTitle: document.getElementById("result-title"),
     resultText: document.getElementById("result-text"),
-    restartBtn: document.getElementById("restart-btn")
+    restartBtn: document.getElementById("restart-btn"),
+    langBtn: document.getElementById("lang-btn")
   };
+
+  const t = () => STRINGS[lang];
+  const labelsFor = item => item.order.map(i => item.src[lang].a[i]);
 
   function render() {
     locked = false;
+    picked = null;
     const item = deck[idx];
-    els.qCounter.textContent = `Question ${idx + 1} of ${deck.length}`;
-    els.scoreCounter.textContent = `Score: ${score}`;
-    renderBest();
     els.progress.setAttribute("aria-valuenow", String(idx));
     els.progressFill.style.width = `${(idx / deck.length) * 100}%`;
-    els.qText.textContent = item.q;
-    els.feedback.textContent = "";
     els.feedback.className = "feedback";
     els.nextBtn.classList.remove("visible");
     els.answers.innerHTML = "";
-    item.a.forEach((label, i) => {
+    item.order.forEach((_, i) => {
       const li = document.createElement("li");
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "answer";
-      btn.textContent = label;
       btn.addEventListener("click", () => pick(btn, i));
       li.appendChild(btn);
       els.answers.appendChild(li);
     });
+    paintQuiz();
+  }
+
+  // Writes every language-dependent string of the quiz screen from current state.
+  function paintQuiz() {
+    const s = t();
+    const item = deck[idx];
+    const labels = labelsFor(item);
+    els.qCounter.textContent = s.counter(idx + 1, deck.length);
+    els.scoreCounter.textContent = s.score(score);
+    els.bestCounter.textContent = s.best(readBest(deck.length));
+    els.qText.textContent = item.src[lang].q;
+    els.answers.querySelectorAll(".answer").forEach((b, i) => (b.textContent = labels[i]));
+    if (picked === null) els.feedback.textContent = "";
+    else els.feedback.textContent = picked === item.c ? s.correct : s.wrong(labels[item.c]);
+    els.nextBtn.textContent = idx === deck.length - 1 ? s.finish : s.next;
   }
 
   function pick(btn, i) {
     if (locked) return;
     locked = true;
+    picked = i;
     const item = deck[idx];
     const buttons = els.answers.querySelectorAll(".answer");
     buttons.forEach(b => (b.disabled = true));
     buttons[item.c].classList.add("correct");
     if (i === item.c) {
       score++;
-      els.feedback.textContent = "✅ Correct!";
       els.feedback.classList.add("good");
     } else {
       btn.classList.add("wrong");
-      els.feedback.textContent = "❌ Not quite.";
       els.feedback.classList.add("bad");
     }
-    els.scoreCounter.textContent = `Score: ${score}`;
     els.progressFill.style.width = `${((idx + 1) / deck.length) * 100}%`;
     els.progress.setAttribute("aria-valuenow", String(idx + 1));
-    els.nextBtn.textContent = idx === deck.length - 1 ? "See results 🏁" : "Next question →";
+    paintQuiz();
     els.nextBtn.classList.add("visible");
     els.nextBtn.focus();
   }
@@ -401,42 +678,58 @@
     idx++;
     if (idx >= deck.length) return showResults();
     render();
-    els.qText.focus?.();
   });
 
   function showResults() {
     els.quiz.hidden = true;
     els.results.hidden = false;
     const pct = score / deck.length;
-    let emoji, title;
-    if (score >= 9) { emoji = "🏆"; title = "Flight Director!"; }
-    else if (pct >= 0.7) { emoji = "🚀"; title = "Commander material!"; }
-    else if (pct >= 0.4) { emoji = "🛰️"; title = "Cadet on the rise!"; }
-    else { emoji = "🌱"; title = "Bootcamp days…"; }
-    els.resultEmoji.textContent = emoji;
-    els.resultTitle.textContent = title;
-    els.resultText.textContent = `You scored ${score} out of ${deck.length}.`;
+    const rank = score >= 9 ? 0 : pct >= 0.7 ? 1 : pct >= 0.4 ? 2 : 3;
 
     const previous = readBest(deck.length);
     const isNewBest = previous === null || score > previous;
     if (isNewBest) writeBest(score);
-    const best = isNewBest ? score : previous;
+    outcome = { rank, isNewBest, best: isNewBest ? score : previous };
 
+    els.scoreRing.style.setProperty("--pct", String(Math.round(pct * 100)));
     els.resultBest.classList.toggle("new", isNewBest);
-    els.resultBest.textContent = isNewBest
-      ? `🎉 New personal best: ${best} of ${deck.length}!`
-      : `🏅 Personal best to beat: ${best} of ${deck.length}.`;
-    renderBest();
+    paintResults();
+    els.restartBtn.focus();
   }
 
-  function renderBest() {
-    const best = readBest(deck.length);
-    els.bestCounter.textContent = best === null ? "Best: —" : `Best: ${best}`;
+  function paintResults() {
+    const s = t();
+    const total = deck.length;
+    els.resultScore.textContent = `${score} / ${total}`;
+    els.resultAccuracy.textContent = s.accuracy(Math.round((score / total) * 100));
+    els.resultTitle.textContent = s.ranks[outcome.rank];
+    els.resultText.textContent = s.resultText(score, total);
+    els.resultBest.textContent = outcome.isNewBest ? s.newBest(outcome.best, total) : s.beatBest(outcome.best, total);
+    els.bestCounter.textContent = s.best(readBest(total));
   }
+
+  function applyLanguage() {
+    const s = t();
+    document.documentElement.lang = s.htmlLang;
+    document.title = s.docTitle;
+    document.querySelectorAll("[data-i18n]").forEach(el => (el.textContent = s[el.dataset.i18n]));
+    document.querySelectorAll("[data-i18n-label]").forEach(el => el.setAttribute("aria-label", s[el.dataset.i18nLabel]));
+    els.restartBtn.textContent = s.restart;
+    els.langBtn.textContent = s.toggle;
+    els.langBtn.lang = s.toggleLang;
+    if (outcome) paintResults();
+    else paintQuiz();
+  }
+
+  els.langBtn.addEventListener("click", () => {
+    lang = lang === "zh" ? "en" : "zh";
+    storageSet(LANG_KEY, lang);
+    applyLanguage();
+  });
 
   els.restartBtn.addEventListener("click", () => {
     deck = buildDeck();
-    idx = 0; score = 0;
+    idx = 0; score = 0; outcome = null;
     els.resultBest.textContent = "";
     els.resultBest.classList.remove("new");
     els.results.hidden = true;
@@ -445,6 +738,7 @@
   });
 
   render();
+  applyLanguage();
 </script>
 </body>
 </html>

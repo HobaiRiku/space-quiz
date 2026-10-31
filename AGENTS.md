@@ -13,15 +13,20 @@
 
 ## Accessibility is a hard requirement
 - All interactive controls are native `<button>` elements.
-- Every state change must be conveyed by text, not color alone (the feedback line says "Correct"/"Not quite").
+- Every state change must be conveyed by text, not color alone (the feedback line says "回答正确"/"答错了" in Chinese, "Correct"/"Not quite" in English).
 - Keep `role="progressbar"` + `aria-valuenow/min/max` on the progress bar, `role="status"` on feedback, `aria-live="polite"` on `<main>`.
 - Visible `:focus-visible` outlines must remain.
 - Respect `prefers-color-scheme` (light and dark) and `prefers-reduced-motion` (disable shake/pop/blink).
+
+## Language
+- The UI is bilingual: Chinese (`zh`) by default, English (`en`) via the toggle button. The choice is stored under `spacequiz.lang`.
+- Every user-facing string lives in `STRINGS.zh` and `STRINGS.en`; every question carries both `zh` and `en` text sharing one correct index `c`. Never add a string in only one language.
 
 ## Design
 - Narrow centered column, max-width 420px.
 - Polished, sans-serif, 14–16px body text.
 - Mission-control flavor for headings is fine, but never at the cost of contrast or legibility.
+- No emoji anywhere in the UI. Use text, CSS, or inline SVG for icons.
 
 ## Testing
 - Run `cd tests && node smoke.js` before claiming a change works. It must report all checks passing.

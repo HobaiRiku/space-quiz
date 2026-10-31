@@ -9,16 +9,16 @@ const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
 
 // question text -> correct answer text (identical to smoke.js)
 const KEY = {
-  "Which planet is known as the Red Planet?": "Mars",
-  "Who was the first human to walk on the Moon?": "Neil Armstrong",
-  "Which is the largest planet in our solar system?": "Jupiter",
-  "What galaxy do we live in?": "The Milky Way",
-  "Which spacecraft was the first to fly past Pluto (2015)?": "New Horizons",
-  "What is the closest star to Earth?": "The Sun",
-  "Which rover landed on Mars in Jezero Crater in 2021?": "Perseverance",
-  "What are Saturn's rings mainly made of?": "Ice",
-  "Which was the first artificial satellite in orbit?": "Sputnik 1",
-  "How long does sunlight take to reach Earth?": "About 8 minutes"
+  "哪颗行星被称为“红色星球”？": "火星",
+  "第一位登上月球的人是谁？": "尼尔·阿姆斯特朗",
+  "太阳系中最大的行星是哪一颗？": "木星",
+  "我们生活在哪个星系中？": "银河系",
+  "2015 年首次飞掠冥王星的探测器是？": "新视野号",
+  "距离地球最近的恒星是？": "太阳",
+  "2021 年在火星耶泽罗撞击坑着陆的火星车是？": "毅力号",
+  "土星环主要由什么构成？": "冰",
+  "人类第一颗进入轨道的人造卫星是？": "斯普特尼克 1 号",
+  "阳光从太阳到达地球大约需要多久？": "约 8 分钟"
 };
 
 function makeStore(initial) {
@@ -86,21 +86,21 @@ function playRound(dom, miss = 0) {
   const store = makeStore();
   const dom = load(store);
   const u = bind(dom);
-  check("Fresh profile shows the Best placeholder", u.$("best-counter").textContent === "Best: —",
+  check("Fresh profile shows the Best placeholder", u.$("best-counter").textContent === "最佳：—",
     u.$("best-counter").textContent);
   check("Fresh profile has no stored key", store.getItem("spacequiz.best") === null);
 
   playRound(dom, 1); // 9 of 10
   check("Results reports a new personal best",
-    /New personal best: 9/.test(u.$("result-best").textContent), u.$("result-best").textContent);
+    /新的个人最佳：9/.test(u.$("result-best").textContent), u.$("result-best").textContent);
   check("Best score written to localStorage", store.getItem("spacequiz.best") === "9",
     String(store.getItem("spacequiz.best")));
-  check("HUD shows the best score", u.$("best-counter").textContent === "Best: 9", u.$("best-counter").textContent);
+  check("HUD shows the best score", u.$("best-counter").textContent === "最佳：9", u.$("best-counter").textContent);
 
   // --- 2. Reload on the same origin ------------------------------------
   const dom2 = load(store);
   const u2 = bind(dom2);
-  check("Best score survives a page reload", u2.$("best-counter").textContent === "Best: 9",
+  check("Best score survives a page reload", u2.$("best-counter").textContent === "最佳：9",
     u2.$("best-counter").textContent);
 
   // --- 3. Worse round keeps the best -----------------------------------
@@ -108,14 +108,14 @@ function playRound(dom, miss = 0) {
   check("Worse round does not overwrite the best", store.getItem("spacequiz.best") === "9",
     String(store.getItem("spacequiz.best")));
   check("Worse round reports the standing best",
-    /Personal best to beat: 9/.test(u2.$("result-best").textContent), u2.$("result-best").textContent);
+    /待超越的个人最佳：9/.test(u2.$("result-best").textContent), u2.$("result-best").textContent);
 
   // --- 4. Better round raises the best ---------------------------------
   playRound(dom2, 0); // 10 of 10
   check("Perfect round raises the best to 10", store.getItem("spacequiz.best") === "10",
     String(store.getItem("spacequiz.best")));
   check("Better round is announced as a new best",
-    /New personal best: 10/.test(u2.$("result-best").textContent), u2.$("result-best").textContent);
+    /新的个人最佳：10/.test(u2.$("result-best").textContent), u2.$("result-best").textContent);
 }
 
 // --- 5. Corrupt / out-of-range stored values ------------------------------
@@ -123,7 +123,7 @@ for (const bad of ["not-a-number", "-3", "999", ""]) {
   const store = makeStore({ "spacequiz.best": bad });
   const dom = load(store);
   const u = bind(dom);
-  check(`Corrupt value ${JSON.stringify(bad)} is ignored`, u.$("best-counter").textContent === "Best: —",
+  check(`Corrupt value ${JSON.stringify(bad)} is ignored`, u.$("best-counter").textContent === "最佳：—",
     u.$("best-counter").textContent);
   playRound(dom, 1);
   check(`Corrupt value ${JSON.stringify(bad)} repaired after a round`, store.getItem("spacequiz.best") === "9",
@@ -134,14 +134,33 @@ for (const bad of ["not-a-number", "-3", "999", ""]) {
 {
   const dom = load(makeBrokenStore());
   const u = bind(dom);
-  check("Blocked storage degrades to the placeholder", u.$("best-counter").textContent === "Best: —",
+  check("Blocked storage degrades to the placeholder", u.$("best-counter").textContent === "最佳：—",
     u.$("best-counter").textContent);
   playRound(dom, 1);
   check("Round completes with blocked storage", u.$("results").hidden === false);
   check("Results still render without persistence",
-    /9 out of 10/.test(u.$("result-text").textContent), u.$("result-text").textContent);
+    /答对了 9 \/ 10 题/.test(u.$("result-text").textContent), u.$("result-text").textContent);
   check("New-best line still renders in memory",
-    /New personal best: 9/.test(u.$("result-best").textContent), u.$("result-best").textContent);
+    /新的个人最佳：9/.test(u.$("result-best").textContent), u.$("result-best").textContent);
+}
+
+// --- 7. Language preference persists ------------------------------------
+{
+  const store = makeStore();
+  const dom = load(store);
+  const u = bind(dom);
+  check("No stored language defaults to Chinese", dom.window.document.documentElement.lang === "zh-CN");
+  u.click(u.$("lang-btn"));
+  check("Language choice written to localStorage", store.getItem("spacequiz.lang") === "en",
+    String(store.getItem("spacequiz.lang")));
+  const dom2 = load(store);
+  check("Language choice survives a reload", dom2.window.document.documentElement.lang === "en" &&
+    bind(dom2).$("best-counter").textContent === "Best: —", bind(dom2).$("best-counter").textContent);
+  const dom3 = load(makeStore({ "spacequiz.lang": "fr" }));
+  check("Unknown stored language falls back to Chinese", dom3.window.document.documentElement.lang === "zh-CN");
+  const dom4 = load(makeBrokenStore());
+  bind(dom4).click(bind(dom4).$("lang-btn"));
+  check("Toggle still works with blocked storage", dom4.window.document.documentElement.lang === "en");
 }
 
 // --- Report --------------------------------------------------------------
