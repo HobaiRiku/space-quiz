@@ -102,12 +102,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 4px 12px;
     margin-bottom: 8px;
     font-size: 13px;
     color: var(--muted);
   }
-  .score { font-variant-numeric: tabular-nums; }
+  .hud .score, .hud .best { font-variant-numeric: tabular-nums; white-space: nowrap; }
   .progress {
     height: 8px;
     border-radius: 999px;
@@ -193,6 +194,14 @@
   .results .emoji { font-size: 56px; margin: 8px 0; }
   .results h2 { margin: 6px 0 2px; font-size: 20px; }
   .results p { color: var(--muted); margin: 4px 0 18px; }
+  #result-best {
+    margin: 0 0 18px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--accent);
+    min-height: 20px;
+  }
+  #result-best.new { animation: pop 0.5s ease; }
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20% { transform: translateX(-7px); }
@@ -221,6 +230,7 @@
     <div class="hud">
       <span id="q-counter">Question 1 of 10</span>
       <span class="score" id="score-counter">Score: 0</span>
+      <span class="best" id="best-counter">Best: —</span>
     </div>
     <div class="progress" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" id="progress">
       <div class="progress-fill" id="progress-fill"></div>
@@ -235,6 +245,7 @@
     <div class="emoji" id="result-emoji">🌟</div>
     <h2 id="result-title">Mission complete!</h2>
     <p id="result-text"></p>
+    <p id="result-best" role="status"></p>
     <button class="next-btn visible" id="restart-btn" type="button">Fly again ↻</button>
   </section>
 </main>
@@ -290,6 +301,32 @@
   }
 
   let deck = buildDeck();
+  // --- Personal best persistence (issue #1) ------------------------------
+  // Every storage access is guarded: blocked storage (private mode, file://
+  // restrictions, quota) must degrade to "no best score", never break a round.
+  const BEST_KEY = "spacequiz.best";
+
+  function readBest(max) {
+    try {
+      const raw = localStorage.getItem(BEST_KEY);
+      if (raw === null) return null;
+      const n = Number.parseInt(raw, 10);
+      if (!Number.isFinite(n) || n < 0 || n > max) return null;
+      return n;
+    } catch {
+      return null;
+    }
+  }
+
+  function writeBest(n) {
+    try {
+      localStorage.setItem(BEST_KEY, String(n));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   let idx = 0, score = 0, locked = false;
 
   const els = {
@@ -301,6 +338,8 @@
     nextBtn: document.getElementById("next-btn"),
     qCounter: document.getElementById("q-counter"),
     scoreCounter: document.getElementById("score-counter"),
+    bestCounter: document.getElementById("best-counter"),
+    resultBest: document.getElementById("result-best"),
     progress: document.getElementById("progress"),
     progressFill: document.getElementById("progress-fill"),
     resultEmoji: document.getElementById("result-emoji"),
@@ -314,6 +353,7 @@
     const item = deck[idx];
     els.qCounter.textContent = `Question ${idx + 1} of ${deck.length}`;
     els.scoreCounter.textContent = `Score: ${score}`;
+    renderBest();
     els.progress.setAttribute("aria-valuenow", String(idx));
     els.progressFill.style.width = `${(idx / deck.length) * 100}%`;
     els.qText.textContent = item.q;
@@ -376,11 +416,29 @@
     els.resultEmoji.textContent = emoji;
     els.resultTitle.textContent = title;
     els.resultText.textContent = `You scored ${score} out of ${deck.length}.`;
+
+    const previous = readBest(deck.length);
+    const isNewBest = previous === null || score > previous;
+    if (isNewBest) writeBest(score);
+    const best = isNewBest ? score : previous;
+
+    els.resultBest.classList.toggle("new", isNewBest);
+    els.resultBest.textContent = isNewBest
+      ? `🎉 New personal best: ${best} of ${deck.length}!`
+      : `🏅 Personal best to beat: ${best} of ${deck.length}.`;
+    renderBest();
+  }
+
+  function renderBest() {
+    const best = readBest(deck.length);
+    els.bestCounter.textContent = best === null ? "Best: —" : `Best: ${best}`;
   }
 
   els.restartBtn.addEventListener("click", () => {
     deck = buildDeck();
     idx = 0; score = 0;
+    els.resultBest.textContent = "";
+    els.resultBest.classList.remove("new");
     els.results.hidden = true;
     els.quiz.hidden = false;
     render();
