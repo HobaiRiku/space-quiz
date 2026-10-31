@@ -5,7 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { JSDOM } = require("jsdom");
 
-const htmlPath = path.join(__dirname, "..", "space-quiz", "index.html");
+const htmlPath = path.join(__dirname, "..", "index.html");
 const html = fs.readFileSync(htmlPath, "utf8");
 
 const dom = new JSDOM(html, { runScripts: "dangerously", pretendToBeVisual: true });
