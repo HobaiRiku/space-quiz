@@ -108,6 +108,36 @@ check("Restart returns to question 1 with score 0",
   /^第 1 \/ \d+ 题$/.test(counterText()) && scoreText() === "得分：0",
   `${counterText()} / ${scoreText()}`);
 
+// --- Difficulty selector -------------------------------------------------
+const cadetButton = document.querySelector('[data-difficulty="cadet"]');
+const commanderButton = document.querySelector('[data-difficulty="commander"]');
+check("Commander is selected by default", commanderButton.getAttribute("aria-pressed") === "true" &&
+  cadetButton.getAttribute("aria-pressed") === "false");
+click(correctBtn());
+click(cadetButton);
+check("Switching to Cadet resets score and progress", scoreText() === "得分：0" &&
+  /^第 1 \/ 7 题$/.test(counterText()) && progressNow() === 0 &&
+  document.getElementById("progress").getAttribute("aria-valuemax") === "7" &&
+  document.querySelector(".tagline").textContent.startsWith("7 道题"));
+check("Difficulty selector exposes its group label",
+  document.querySelector(".difficulty-switch").getAttribute("aria-label") === "选择难度");
+const cadetQuestions = new Set();
+for (let guard = 0; guard < 10 && results().hidden; guard++) {
+  cadetQuestions.add(qText());
+  click(correctBtn());
+  click(nextBtn());
+}
+check("Cadet contains only its seven keyed questions", cadetQuestions.size === 7 &&
+  [...cadetQuestions].every(question => KEY[question] !== undefined), `${cadetQuestions.size} questions`);
+check("Cadet results rank uses its filtered pool percentage",
+  document.getElementById("result-title").textContent === "飞行总监级别");
+click(document.getElementById("restart-btn"));
+click(commanderButton);
+check("Switching back to Commander restores all ten questions and resets the run",
+  /^第 1 \/ 10 题$/.test(counterText()) && scoreText() === "得分：0" &&
+  commanderButton.getAttribute("aria-pressed") === "true" &&
+  document.getElementById("progress").getAttribute("aria-valuemax") === "10");
+
 // --- Keyboard + accessibility -------------------------------------------
 const allButtons = [...document.querySelectorAll("button")];
 check("All interactive controls are native <button>s (keyboard operable)",
@@ -164,6 +194,10 @@ check("Restart resets score to 0", scoreText() === "得分：0", scoreText());
     document.querySelector("h1").textContent.includes("Space Exploration Quiz"));
   check("English counter and score text", /^Question 1 of 10$/.test(counterText()) && scoreText() === "Score: 0",
     `${counterText()} / ${scoreText()}`);
+  check("Difficulty labels translate to English",
+    cadetButton.textContent === "Cadet" && commanderButton.textContent === "Commander" &&
+    document.querySelector(".difficulty-switch").getAttribute("aria-label") === "Choose difficulty" &&
+    document.querySelector(".tagline").textContent.startsWith("10 questions"));
   check("Same question is relabelled, not reshuffled", KEY[qText()] !== undefined && qText() !== zhQuestion &&
     answers().every((b, i) => (KEY[qText()] === b.textContent.trim()) === zhOrder[i]), qText());
   check("Toggle now offers Chinese", langBtn.textContent === "中文" && langBtn.lang === "zh-CN", langBtn.textContent);

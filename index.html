@@ -180,6 +180,34 @@
     font-size: 14px;
   }
 
+  .difficulty-switch {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .difficulty-switch button {
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
+    background: var(--card-solid);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .difficulty-switch button[aria-pressed="true"] {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: var(--accent);
+  }
+  .difficulty-switch button:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
   .hud {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -388,7 +416,7 @@
   @media (prefers-reduced-motion: reduce) {
     .eyebrow .dot { animation: none; }
     .answer.correct, .answer.wrong, #result-best.new { animation: none; }
-    .answer, .answer::before, .answer:hover:not(:disabled), .next-btn, .next-btn:hover, .lang-btn { transition: none; transform: none; }
+    .answer, .answer::before, .answer:hover:not(:disabled), .next-btn, .next-btn:hover, .lang-btn, .difficulty-switch button { transition: none; transform: none; }
     .progress-fill { transition: none; }
   }
   @media (max-width: 360px) {
@@ -414,6 +442,10 @@
   <p class="tagline" data-i18n="tagline">10 道题，测测你离成为宇航员还有多远？</p>
 
   <section id="quiz" data-i18n-label="quizLabel" aria-label="答题区">
+    <div class="difficulty-switch" role="group" data-i18n-label="difficultyLabel" aria-label="选择难度">
+      <button type="button" data-difficulty="cadet" aria-pressed="false" data-i18n="cadet">学员</button>
+      <button type="button" data-difficulty="commander" aria-pressed="true" data-i18n="commander">指令长</button>
+    </div>
     <div class="hud">
       <span id="q-counter">第 1 / 10 题</span>
       <span class="score" id="score-counter">得分：0</span>
@@ -445,34 +477,34 @@
 <script>
   // Each question carries both languages; `c` indexes the correct answer in both lists.
   const QUESTIONS = [
-    { c: 0,
+    { c: 0, difficulty: "cadet",
       zh: { q: "哪颗行星被称为“红色星球”？", a: ["火星", "金星", "木星", "水星"] },
       en: { q: "Which planet is known as the Red Planet?", a: ["Mars", "Venus", "Jupiter", "Mercury"] } },
-    { c: 1,
+    { c: 1, difficulty: "commander",
       zh: { q: "第一位登上月球的人是谁？", a: ["巴兹·奥尔德林", "尼尔·阿姆斯特朗", "尤里·加加林", "迈克尔·柯林斯"] },
       en: { q: "Who was the first human to walk on the Moon?", a: ["Buzz Aldrin", "Neil Armstrong", "Yuri Gagarin", "Michael Collins"] } },
-    { c: 2,
+    { c: 2, difficulty: "cadet",
       zh: { q: "太阳系中最大的行星是哪一颗？", a: ["土星", "海王星", "木星", "地球"] },
       en: { q: "Which is the largest planet in our solar system?", a: ["Saturn", "Neptune", "Jupiter", "Earth"] } },
-    { c: 3,
+    { c: 3, difficulty: "cadet",
       zh: { q: "我们生活在哪个星系中？", a: ["仙女座星系", "三角座星系", "涡状星系", "银河系"] },
       en: { q: "What galaxy do we live in?", a: ["Andromeda", "Triangulum", "Whirlpool", "The Milky Way"] } },
-    { c: 0,
+    { c: 0, difficulty: "commander",
       zh: { q: "2015 年首次飞掠冥王星的探测器是？", a: ["新视野号", "旅行者 1 号", "卡西尼号", "先驱者 10 号"] },
       en: { q: "Which spacecraft was the first to fly past Pluto (2015)?", a: ["New Horizons", "Voyager 1", "Cassini", "Pioneer 10"] } },
-    { c: 1,
+    { c: 1, difficulty: "cadet",
       zh: { q: "距离地球最近的恒星是？", a: ["比邻星", "太阳", "天狼星", "南门二 A"] },
       en: { q: "What is the closest star to Earth?", a: ["Proxima Centauri", "The Sun", "Sirius", "Alpha Centauri A"] } },
-    { c: 2,
+    { c: 2, difficulty: "commander",
       zh: { q: "2021 年在火星耶泽罗撞击坑着陆的火星车是？", a: ["好奇号", "机遇号", "毅力号", "祝融号"] },
       en: { q: "Which rover landed on Mars in Jezero Crater in 2021?", a: ["Curiosity", "Opportunity", "Perseverance", "Zhurong"] } },
-    { c: 0,
+    { c: 0, difficulty: "cadet",
       zh: { q: "土星环主要由什么构成？", a: ["冰", "岩石", "金属", "气体"] },
       en: { q: "What are Saturn's rings mainly made of?", a: ["Ice", "Rock", "Metal", "Gas"] } },
-    { c: 1,
+    { c: 1, difficulty: "cadet",
       zh: { q: "人类第一颗进入轨道的人造卫星是？", a: ["探险者 1 号", "斯普特尼克 1 号", "东方 1 号", "电星 1 号"] },
       en: { q: "Which was the first artificial satellite in orbit?", a: ["Explorer 1", "Sputnik 1", "Vostok 1", "Telstar"] } },
-    { c: 1,
+    { c: 1, difficulty: "cadet",
       zh: { q: "阳光从太阳到达地球大约需要多久？", a: ["约 8 秒", "约 8 分钟", "约 8 小时", "约 80 分钟"] },
       en: { q: "How long does sunlight take to reach Earth?", a: ["About 8 seconds", "About 8 minutes", "About 8 hours", "About 80 minutes"] } }
   ];
@@ -483,8 +515,11 @@
       docTitle: "太空探索知识问答",
       status: "任务控制中心 · 在线",
       title: "太空探索知识问答",
-      tagline: "10 道题，测测你离成为宇航员还有多远？",
+      tagline: n => `${n} 道题，测测你离成为宇航员还有多远？`,
       quizLabel: "答题区",
+      difficultyLabel: "选择难度",
+      cadet: "学员",
+      commander: "指令长",
       progressLabel: "答题进度",
       resultsLabel: "答题结果",
       counter: (n, t) => `第 ${n} / ${t} 题`,
@@ -509,8 +544,11 @@
       docTitle: "Space Exploration Quiz",
       status: "FLIGHT OPS · LIVE",
       title: "Space Exploration Quiz",
-      tagline: "Ten questions. How mission-ready are you?",
+      tagline: n => `${n} questions. How mission-ready are you?`,
       quizLabel: "Quiz",
+      difficultyLabel: "Choose difficulty",
+      cadet: "Cadet",
+      commander: "Commander",
       progressLabel: "Quiz progress",
       resultsLabel: "Results",
       counter: (n, t) => `Question ${n} of ${t}`,
@@ -556,8 +594,9 @@
   // Build a fresh deck: questions shuffled, and each question's answers shuffled.
   // The deck stores the answer ORDER, not labels, so switching language mid-round
   // relabels the same buttons without reshuffling or losing the correct index.
-  function buildDeck() {
-    return shuffle(QUESTIONS).map(src => {
+  function buildDeck(level) {
+    const pool = level === "cadet" ? QUESTIONS.filter(question => question.difficulty === "cadet") : QUESTIONS;
+    return shuffle(pool).map(src => {
       const order = shuffle(src.zh.a.map((_, i) => i));
       return { src, order, c: order.indexOf(src.c) };
     });
@@ -567,6 +606,7 @@
   // Blocked storage (private mode, file:// restrictions, quota) must degrade
   // gracefully, never break a round.
   const BEST_KEY = "spacequiz.best";
+  const CADET_BEST_KEY = "spacequiz.best.cadet";
   const LANG_KEY = "spacequiz.lang";
 
   function storageGet(key) {
@@ -577,18 +617,21 @@
     try { localStorage.setItem(key, value); return true; } catch { return false; }
   }
 
-  function readBest(max) {
-    const raw = storageGet(BEST_KEY);
+  function readBest(max, level) {
+    const raw = storageGet(level === "cadet" ? CADET_BEST_KEY : BEST_KEY);
     if (raw === null) return null;
     const n = Number.parseInt(raw, 10);
     if (!Number.isFinite(n) || n < 0 || n > max) return null;
     return n;
   }
 
-  const writeBest = n => storageSet(BEST_KEY, String(n));
+  function writeBest(n, level) {
+    return storageSet(level === "cadet" ? CADET_BEST_KEY : BEST_KEY, String(n));
+  }
 
   let lang = STRINGS[storageGet(LANG_KEY)] ? storageGet(LANG_KEY) : "zh";
-  let deck = buildDeck();
+  let difficulty = "commander";
+  let deck = buildDeck(difficulty);
   let idx = 0, score = 0, locked = false, picked = null, outcome = null;
 
   const els = {
@@ -609,8 +652,10 @@
     resultAccuracy: document.getElementById("result-accuracy"),
     resultTitle: document.getElementById("result-title"),
     resultText: document.getElementById("result-text"),
+    tagline: document.querySelector(".tagline"),
     restartBtn: document.getElementById("restart-btn"),
-    langBtn: document.getElementById("lang-btn")
+    langBtn: document.getElementById("lang-btn"),
+    difficultyButtons: document.querySelectorAll("[data-difficulty]")
   };
 
   const t = () => STRINGS[lang];
@@ -621,6 +666,7 @@
     picked = null;
     const item = deck[idx];
     els.progress.setAttribute("aria-valuenow", String(idx));
+    els.progress.setAttribute("aria-valuemax", String(deck.length));
     els.progressFill.style.width = `${(idx / deck.length) * 100}%`;
     els.feedback.className = "feedback";
     els.nextBtn.classList.remove("visible");
@@ -642,9 +688,10 @@
     const s = t();
     const item = deck[idx];
     const labels = labelsFor(item);
+    els.tagline.textContent = s.tagline(deck.length);
     els.qCounter.textContent = s.counter(idx + 1, deck.length);
     els.scoreCounter.textContent = s.score(score);
-    els.bestCounter.textContent = s.best(readBest(deck.length));
+    els.bestCounter.textContent = s.best(readBest(deck.length, difficulty));
     els.qText.textContent = item.src[lang].q;
     els.answers.querySelectorAll(".answer").forEach((b, i) => (b.textContent = labels[i]));
     if (picked === null) els.feedback.textContent = "";
@@ -684,11 +731,11 @@
     els.quiz.hidden = true;
     els.results.hidden = false;
     const pct = score / deck.length;
-    const rank = score >= 9 ? 0 : pct >= 0.7 ? 1 : pct >= 0.4 ? 2 : 3;
+    const rank = pct >= 0.9 ? 0 : pct >= 0.7 ? 1 : pct >= 0.4 ? 2 : 3;
 
-    const previous = readBest(deck.length);
+    const previous = readBest(deck.length, difficulty);
     const isNewBest = previous === null || score > previous;
-    if (isNewBest) writeBest(score);
+    if (isNewBest) writeBest(score, difficulty);
     outcome = { rank, isNewBest, best: isNewBest ? score : previous };
 
     els.scoreRing.style.setProperty("--pct", String(Math.round(pct * 100)));
@@ -705,14 +752,38 @@
     els.resultTitle.textContent = s.ranks[outcome.rank];
     els.resultText.textContent = s.resultText(score, total);
     els.resultBest.textContent = outcome.isNewBest ? s.newBest(outcome.best, total) : s.beatBest(outcome.best, total);
-    els.bestCounter.textContent = s.best(readBest(total));
+    els.bestCounter.textContent = s.best(readBest(total, difficulty));
   }
+
+  function startRun(level) {
+    difficulty = level;
+    deck = buildDeck(difficulty);
+    idx = 0; score = 0; outcome = null;
+    els.difficultyButtons.forEach(button => {
+      button.setAttribute("aria-pressed", String(button.dataset.difficulty === difficulty));
+    });
+    els.resultBest.textContent = "";
+    els.resultBest.classList.remove("new");
+    els.results.hidden = true;
+    els.quiz.hidden = false;
+    render();
+  }
+
+  els.difficultyButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      const level = button.dataset.difficulty;
+      if (level !== difficulty) startRun(level);
+    });
+  });
 
   function applyLanguage() {
     const s = t();
     document.documentElement.lang = s.htmlLang;
     document.title = s.docTitle;
-    document.querySelectorAll("[data-i18n]").forEach(el => (el.textContent = s[el.dataset.i18n]));
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const value = s[el.dataset.i18n];
+      el.textContent = typeof value === "function" ? value(deck.length) : value;
+    });
     document.querySelectorAll("[data-i18n-label]").forEach(el => el.setAttribute("aria-label", s[el.dataset.i18nLabel]));
     els.restartBtn.textContent = s.restart;
     els.langBtn.textContent = s.toggle;
@@ -728,13 +799,7 @@
   });
 
   els.restartBtn.addEventListener("click", () => {
-    deck = buildDeck();
-    idx = 0; score = 0; outcome = null;
-    els.resultBest.textContent = "";
-    els.resultBest.classList.remove("new");
-    els.results.hidden = true;
-    els.quiz.hidden = false;
-    render();
+    startRun(difficulty);
   });
 
   render();

@@ -118,7 +118,27 @@ function playRound(dom, miss = 0) {
     /新的个人最佳：10/.test(u2.$("result-best").textContent), u2.$("result-best").textContent);
 }
 
-// --- 5. Corrupt / out-of-range stored values ------------------------------
+// --- 5. Difficulty-specific best scores -------------------------------
+{
+  const store = makeStore();
+  const dom = load(store);
+  const u = bind(dom);
+  u.click(dom.window.document.querySelector('[data-difficulty="cadet"]'));
+  playRound(dom);
+  check("Cadet best uses a separate namespaced key",
+    store.getItem("spacequiz.best.cadet") === "7" && store.getItem("spacequiz.best") === null,
+    JSON.stringify(store._dump()));
+
+  const dom2 = load(store);
+  const u2 = bind(dom2);
+  check("Commander best remains independent from the Cadet best",
+    u2.$("best-counter").textContent === "最佳：—");
+  u2.click(dom2.window.document.querySelector('[data-difficulty="cadet"]'));
+  check("Cadet best survives reload and difficulty selection",
+    u2.$("best-counter").textContent === "最佳：7", u2.$("best-counter").textContent);
+}
+
+// --- 6. Corrupt / out-of-range stored values ------------------------------
 for (const bad of ["not-a-number", "-3", "999", ""]) {
   const store = makeStore({ "spacequiz.best": bad });
   const dom = load(store);
@@ -130,7 +150,7 @@ for (const bad of ["not-a-number", "-3", "999", ""]) {
     String(store.getItem("spacequiz.best")));
 }
 
-// --- 6. Blocked storage must never break the quiz ------------------------
+// --- 7. Blocked storage must never break the quiz ------------------------
 {
   const dom = load(makeBrokenStore());
   const u = bind(dom);
@@ -144,7 +164,7 @@ for (const bad of ["not-a-number", "-3", "999", ""]) {
     /新的个人最佳：9/.test(u.$("result-best").textContent), u.$("result-best").textContent);
 }
 
-// --- 7. Language preference persists ------------------------------------
+// --- 8. Language preference persists ------------------------------------
 {
   const store = makeStore();
   const dom = load(store);
