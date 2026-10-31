@@ -606,6 +606,7 @@
   // Blocked storage (private mode, file:// restrictions, quota) must degrade
   // gracefully, never break a round.
   const BEST_KEY = "spacequiz.best";
+  const CADET_BEST_KEY = "spacequiz.best.cadet";
   const LANG_KEY = "spacequiz.lang";
 
   function storageGet(key) {
@@ -617,40 +618,15 @@
   }
 
   function readBest(max, level) {
-    const raw = storageGet(BEST_KEY);
+    const raw = storageGet(level === "cadet" ? CADET_BEST_KEY : BEST_KEY);
     if (raw === null) return null;
-    let n;
-    try {
-      const scores = JSON.parse(raw);
-      if (scores && typeof scores === "object" && !Array.isArray(scores)) n = scores[level];
-      else if (level === "commander") n = Number.parseInt(raw, 10);
-    } catch {
-      if (level === "commander") n = Number.parseInt(raw, 10);
-    }
+    const n = Number.parseInt(raw, 10);
     if (!Number.isFinite(n) || n < 0 || n > max) return null;
     return n;
   }
 
   function writeBest(n, level) {
-    const raw = storageGet(BEST_KEY);
-    let scores = {};
-    if (raw !== null) {
-      try {
-        const stored = JSON.parse(raw);
-        if (stored && typeof stored === "object" && !Array.isArray(stored)) scores = stored;
-        else if (level !== "commander") {
-          const legacyBest = Number.parseInt(raw, 10);
-          if (Number.isFinite(legacyBest)) scores.commander = legacyBest;
-        }
-      } catch {
-        if (level !== "commander") {
-          const legacyBest = Number.parseInt(raw, 10);
-          if (Number.isFinite(legacyBest)) scores.commander = legacyBest;
-        }
-      }
-    }
-    scores[level] = n;
-    return storageSet(BEST_KEY, JSON.stringify(scores));
+    return storageSet(level === "cadet" ? CADET_BEST_KEY : BEST_KEY, String(n));
   }
 
   let lang = STRINGS[storageGet(LANG_KEY)] ? storageGet(LANG_KEY) : "zh";
