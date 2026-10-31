@@ -55,7 +55,7 @@ node smoke.js    # core behavior: progress, scoring, feedback, results, a11y
 node best.js     # personal-best persistence, corrupt and blocked storage
 ```
 
-Expected output: **31/31** and **22/22** checks passing.
+Expected output: **35/35** and **22/22** checks passing.
 
 Both suites run on every push and pull request via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
