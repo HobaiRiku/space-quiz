@@ -22,7 +22,7 @@ diffed, grepped, and audited:
 | [3](./l03-test.md) | Inspect and test | ✅ | `tests/smoke.js` (35 checks) |
 | [4](./l04-instructions.md) | Project instructions | ✅ | `AGENTS.md` |
 | [5](./l05-publish.md) | Publish | ✅ | github.com/HobaiRiku/space-quiz |
-| [6](./l06-issues.md) | Issues and sessions | ✅ | issues #1–#3, PR #4 |
+| [6](./l06-issues.md) | Issues and sessions | ✅ | issues #1–#3, PR #4, PR #5 |
 | [7](./l07-plan.md) | Plan mode | ✅ | `plan-issue-1-best-score.md`, `tests/best.js` |
 | [8](./l08-review.md) | Review loop | ✅ | PR #4 merged, self-review finding |
 | [9](./l09-automations.md) | Automations | ✅ (drafted) | weekly *Issue triage* |

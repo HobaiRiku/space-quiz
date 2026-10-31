@@ -38,9 +38,9 @@ demonstrates was reproduced faithfully:
 | Board shows open issues as cards | `gh issue list` — one open card (#3) |
 | Card carries full issue context | `gh issue view 3` loads title, body, labels |
 | Starting work creates a session grounded in that issue | Issue #3 was read into context and remains the scoped next task |
-| Issue #1 shipped from a board-style handoff | Implemented in an isolated worktree and merged as PR #5 |
+| Issue #2 shipped from a board-style handoff | Implemented in an isolated worktree and merged as PR #5 |
 
-Issue #1 (*personal best*) is the canonical example of this lesson completing:
+Issue #2 (*personal best*) is the canonical example of this lesson completing:
 it was picked off the backlog, given a dedicated session in
 `../space-quiz-wt-best`, implemented, reviewed, and closed automatically when
 PR #5 merged.

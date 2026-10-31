@@ -31,7 +31,7 @@ reads back `textContent` / `className` / `getAttribute`. Coverage groups:
 - **Core flow** — start state, progress advance, score increment, feedback copy
   and class, Next → results transition, restart reset.
 - **Scoring** — a deliberate wrong answer (question 2) yields 9/10, not 10/10.
-- **Shuffle (added with issue #2)** — twelve consecutive restarts produce more
+- **Shuffle (added with issue #1)** — twelve consecutive restarts produce more
   than one ordering, and the answer set is always complete.
 - **Accessibility** — `role="status"` on feedback, answers are `<button>`s,
   `prefers-reduced-motion` is honoured in the stylesheet.

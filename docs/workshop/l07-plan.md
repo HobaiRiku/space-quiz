@@ -2,12 +2,12 @@
 
 ## Goal
 
-Use plan mode on issue #1 so the design is reviewable *before* any code changes.
+Use plan mode on the personal-best issue so the design is reviewable *before* any code changes.
 
 ## Prompt / input
 
 ```
-Plan the implementation of issue #1 (personal best on the results screen).
+Plan the implementation of the personal-best issue (persist the best score on the results screen).
 Do not write code yet — produce the plan, the risks, and the test strategy.
 ```
 
@@ -19,7 +19,8 @@ git worktree add ../space-quiz-wt-best -b feat/personal-best origin/main
 
 ## Result
 
-Plan written to `files/plan-issue-1-best-score.md` (session artifact). Summary:
+Plan written to `files/plan-issue-1-best-score.md` (session artifact; the filename still
+says "issue 1" from before the numbers were reconciled — the issue is **#2**). Summary:
 
 | Element | Plan |
 | --- | --- |
